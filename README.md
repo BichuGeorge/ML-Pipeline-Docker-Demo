@@ -21,7 +21,7 @@
 Clone the repository
 
 ```bash
-https://github.com/entbappy/End-to-End-Machine-Learning-Pipeline
+https://github.com/BichuGeorge/ML-Pipeline-Docker-Demo
 ```
 ### STEP 01- Create a conda environment after opening the repository
 
