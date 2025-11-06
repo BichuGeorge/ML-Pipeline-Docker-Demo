@@ -44,9 +44,14 @@ jobs:
 
       - name: Login to ACR
         run: |
-          az acr login --name ${{ secrets.ACR_NAME }}
+          ACR_NAME=${{ secrets.ACR_NAME }}
+          ACR_LOGIN_SERVER=${{ secrets.ACR_LOGIN_SERVER }}
+          # get an ACR access token (no docker daemon required for this command)
+          TOKEN=$(az acr login --name "$ACR_NAME" --expose-token --output tsv --query accessToken)
+          # login docker using the token (use fixed username as recommended by ACR)
+          echo "$TOKEN" | docker login "$ACR_LOGIN_SERVER" --username 00000000-0000-0000-0000-000000000000 --password-stdin
 
-      - name: Build, tag, and push image to Amazon ACR
+      - name: Build, tag, and push image to ACR
         env:
           ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}   # e.g. myregistry.azurecr.io
           ACR_REPOSITORY: ${{ secrets.ACR_REPOSITORY_NAME }}
@@ -74,7 +79,12 @@ jobs:
 
       - name: Login to ACR
         run: |
-          az acr login --name ${{ secrets.ACR_NAME }}
+          ACR_NAME=${{ secrets.ACR_NAME }}
+          ACR_LOGIN_SERVER=${{ secrets.ACR_LOGIN_SERVER }}
+          # get an ACR access token (no docker daemon required for this command)
+          TOKEN=$(az acr login --name "$ACR_NAME" --expose-token --output tsv --query accessToken)
+          # login docker using the token (use fixed username as recommended by ACR)
+          echo "$TOKEN" | docker login "$ACR_LOGIN_SERVER" --username 00000000-0000-0000-0000-000000000000 --password-stdin
       
       
       - name: Pull latest images
