@@ -104,7 +104,7 @@ python app.py
 
 # 7. Setup github secrets:
 
-    AZURE_CLIENT_ID
+    AZURE_CLIENT_ID =
 
 	AZURE_CLIENT_SECRET
 
