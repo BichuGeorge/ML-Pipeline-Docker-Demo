@@ -70,6 +70,16 @@ jobs:
     needs: build-and-push-acr-image
     runs-on: self-hosted
     steps:
+      - name: Setup Docker
+        run: |
+          # Check Docker service status
+          if ! systemctl is-active --quiet docker; then
+            echo "Starting Docker service..."
+            sudo systemctl start docker
+          fi
+          # Ensure proper permissions
+          sudo chmod 666 /var/run/docker.sock
+          
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -93,8 +103,6 @@ jobs:
           ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
           IMAGE_NAME: winequality  # Use same name as above
         run: |
-          # Login to ACR using az cli (this provides push access)
-          az acr login --name ${{ secrets.ACR_NAME }}
           docker pull $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
          
       - name: Stop and remove container if running
