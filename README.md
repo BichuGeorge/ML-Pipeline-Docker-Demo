@@ -54,37 +54,32 @@ python app.py
 
 	#with specific access
 
-	1. EC2 access : It is virtual machine
+	1. Azure VM access : It is virtual machine
 
-	2. ECR: Elastic Container registry to save your docker image in aws
+	2. ACR: Azure Container registry to save your docker image in azure
 
 
 	#Description: About the deployment
 
 	1. Build docker image of the source code
 
-	2. Push your docker image to ECR
+	2. Push your docker image to ACR
 
-	3. Launch Your EC2 
+	3. Launch Your Azure VM 
 
-	4. Pull Your image from ECR in EC2
+	4. Pull Your image from ACR in Azure VM
 
-	5. Lauch your docker image in EC2
+	5. Lauch your docker image in Azure VM
 
-	#Policy:
-
-	1. AmazonEC2ContainerRegistryFullAccess
-
-	2. AmazonEC2FullAccess
 
 	
-## 3. Create ECR repo to store/save docker image
-    - Save the URI: 315865595366.dkr.ecr.us-east-1.amazonaws.com/winerepo
+## 3. Create ACR login user:
+    - Save the URI: winerepo.azurecr.io
 
 	
-## 4. Create EC2 machine (Ubuntu) 
+## 4. Create Azure VM machine (Ubuntu) 
 
-## 5. Open EC2 and Install docker in EC2 Machine:
+## 5. Open Azure VM and Install docker in azure VM Machine:
 	
 	
 	#optinal
@@ -103,18 +98,21 @@ python app.py
 
 	newgrp docker
 	
-# 6. Configure EC2 as self-hosted runner:
+# 6. Configure VM as self-hosted runner:
     setting>actions>runner>new self hosted runner> choose os> then run command one by one
 
 
 # 7. Setup github secrets:
 
-    AWS_ACCESS_KEY_ID=
+    AZURE_CLIENT_ID
 
-    AWS_SECRET_ACCESS_KEY=
+	AZURE_CLIENT_SECRET
 
-    AWS_REGION = us-east-1
+	AZURE_TENANT_ID
 
-    AWS_ECR_LOGIN_URI = demo>>  566373416292.dkr.ecr.ap-south-1.amazonaws.com
+	The above 3 can be fetched using command: 
+	az ad sp create-for-rbac --name "gh-actions-sp" --role contributor --scopes /subscriptions/<SUBSCRIPTION_ID> --sdk-auth
 
-    ECR_REPOSITORY_NAME = simple-app
+    ACR_NAME — name of your Azure Container Registry (e.g. myregistry)
+	ACR_LOGIN_SERVER — full login server (e.g. myregistry.azurecr.io)
+	ACR_REPOSITORY_NAME — repository/image name (e.g. cnncls)
