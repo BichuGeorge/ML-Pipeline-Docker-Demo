@@ -93,15 +93,15 @@ jobs:
           ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
           IMAGE_NAME: winequality  # Use same name as above
         run: |
-          sudo docker pull $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
+          docker pull $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
          
       - name: Stop and remove container if running
         run: |
-         sudo docker ps -q --filter "name=cnncls" | grep -q . && docker stop cnncls && docker rm -fv cnncls
+         docker ps -q --filter "name=cnncls" | grep -q . && docker stop cnncls && docker rm -fv cnncls
        
       - name: Run Docker Image to serve users
         run: |
-          sudo docker run -d -p 8080:8080 --name=cnncls \
+          docker run -d -p 8080:8080 --name=cnncls \
             -e "AZURE_CLIENT_ID=${{ fromJson(secrets.AZURE_CREDENTIALS).clientId }}" \
             -e "AZURE_CLIENT_SECRET=${{ fromJson(secrets.AZURE_CREDENTIALS).clientSecret }}" \
             -e "AZURE_TENANT_ID=${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}" \
@@ -109,4 +109,4 @@ jobs:
 
       - name: Clean previous images and containers
         run: |
-          sudo docker system prune -f
+          docker system prune -f
