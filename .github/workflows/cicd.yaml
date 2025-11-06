@@ -54,15 +54,13 @@ jobs:
       - name: Build, tag, and push image to ACR
         env:
           ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}   # e.g. myregistry.azurecr.io
-          ACR_REPOSITORY: ${{ secrets.ACR_REPOSITORY_NAME }}
+          IMAGE_NAME: winequality  # Change this to your desired image name
           IMAGE_TAG: latest
         run: |
-          # Build a docker container and
-          # push it to ECR so that it can
-          # be deployed to ECS.
-          docker build -t $ACR_LOGIN_SERVER/$ACR_REPOSITORY:$IMAGE_TAG .
-          docker push $ACR_LOGIN_SERVER/$ACR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ACR_LOGIN_SERVER/$ACR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          # Build and tag with ACR format
+          sudo docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG .
+          sudo docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
+          echo "image=$ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG" >> $GITHUB_OUTPUT
           
           
   Continuous-Deployment:
@@ -88,16 +86,19 @@ jobs:
       
       
       - name: Pull latest images
+        env:
+          ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
+          IMAGE_NAME: winequality  # Use same name as above
         run: |
-         docker pull ${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.ACR_REPOSITORY_NAME }}:latest
+          docker pull $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
          
       - name: Stop and remove container if running
         run: |
-         docker ps -q --filter "name=cnncls" | grep -q . && docker stop cnncls && docker rm -fv cnncls
+         sudo docker ps -q --filter "name=cnncls" | grep -q . && docker stop cnncls && docker rm -fv cnncls
        
       - name: Run Docker Image to serve users
         run: |
-          docker run -d -p 8080:8080 --name=cnncls \
+          sudo docker run -d -p 8080:8080 --name=cnncls \
             -e "AZURE_CLIENT_ID=${{ fromJson(secrets.AZURE_CREDENTIALS).clientId }}" \
             -e "AZURE_CLIENT_SECRET=${{ fromJson(secrets.AZURE_CREDENTIALS).clientSecret }}" \
             -e "AZURE_TENANT_ID=${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}" \
@@ -105,4 +106,4 @@ jobs:
 
       - name: Clean previous images and containers
         run: |
-          docker system prune -f
+          sudo docker system prune -f
