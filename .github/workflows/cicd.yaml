@@ -93,6 +93,8 @@ jobs:
           ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
           IMAGE_NAME: winequality  # Use same name as above
         run: |
+          # Login to ACR using az cli (this provides push access)
+          az acr login --name ${{ secrets.ACR_NAME }}
           docker pull $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
          
       - name: Stop and remove container if running
